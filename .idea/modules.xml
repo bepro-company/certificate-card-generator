@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/certificate-info-converter.iml" filepath="$PROJECT_DIR$/.idea/certificate-info-converter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/certificate-card-genrator.iml" filepath="$PROJECT_DIR$/.idea/certificate-card-genrator.iml" />
     </modules>
   </component>
 </project>
