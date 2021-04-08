@@ -17,7 +17,7 @@ class Main extends React.Component{
       width: "100%",
       rowHeaders: true,
       stretchH: "all",
-      colWidths: ["33.33%", "33.33%", "33.33%"],
+      colWidths: ["30%", "30%", "40%"],
       maxCols: 3
     }
     this.state = {
