@@ -4,7 +4,9 @@ import Handsontable from "handsontable";
 import html2canvas from "html2canvas";
 import JSZip from "jszip";
 import {saveAs} from "file-saver";
-import "./Main.scss"
+import "./Main.scss";
+import logo from "./img/logo.png";
+
 
 class Main extends React.Component{
 
@@ -135,7 +137,10 @@ class Main extends React.Component{
       <div className={"main"}>
         <div className={"section-table"}>
           <div className={"section-header"}>
-            <h1>Bepro11 Analyst 자격증 제작 툴</h1>
+            <div className="title">
+              <img src={logo} alt="bepro logo"/><h1>Bepro11 Analyst 자격증 제작 툴</h1>
+            </div>
+
             <div className="guide">
               <p>1. 컬럼 A,B,C에 각각 자격번호, 이름, 유효기간을 입력합니다.</p>
               <p>2. 맨 아래 이미지 생성 버튼을 클릭합니다</p>

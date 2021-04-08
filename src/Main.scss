@@ -134,20 +134,31 @@ button{
       flex-direction: column;
       align-items: start;
 
+      .title{
+        display: flex;
+        $logo-size: 40px;
+        img{
+          margin-right: 12px;
+          width: $logo-size;
+          height: $logo-size;
+        }
+      }
+
       *{
         text-align: left;
       }
 
       h1{
-        margin-bottom: 8px;
+        margin-bottom: 12px;
       }
       .guide{
-        padding-left: 8px;
+        padding-left: 12px;
 
         p{
           font-size: 14px;
           line-height: 1.5;
           font-weight: bold;
+          color: gray;
         }
       }
     }
