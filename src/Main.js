@@ -1,30 +1,80 @@
 import React from "react";
-import { HotTable } from "@handsontable/react";
-import Handsontable from "handsontable";
+import { HotTable, HotColumn } from "@handsontable/react";
 import html2canvas from "html2canvas";
 import JSZip from "jszip";
 import {saveAs} from "file-saver";
 import "./Main.scss";
-import logo from "./img/logo.png";
+import logo from "./img/logo-front-top-left.png";
+import iconMobile from "./img/icon-mobile.png";
+import iconDesktop from "./img/icon-desktop.png";
+import iconEmail from "./img/icon-email.png";
 
+import {name, nameEng, jobTitle, jobTitleTranslation, mobileCountryCode, mobile, email, address} from "./businessCardProps";
+
+const basicInfos = [name, jobTitle, mobileCountryCode, mobile, email, address];
+const entitiesObj = {
+  ko:{
+    countryName: "Korea",
+    entityName: "Bepro Company Co., Ltd.",
+    infos: [name, nameEng, jobTitle, mobileCountryCode, mobile, email, address],
+    cardSize: {width: 50, height: 90}
+  },
+  uk:{
+    countryName: "UK",
+    entityName: "Bepro-UK Ltd.",
+    infos: basicInfos,
+    cardSize: {width: 55, height: 85}
+  },
+  de: {
+    countryName: "Germany",
+    entityName: "Bepro Europe GmbH",
+    infos: basicInfos,
+    cardSize: {width: 55, height: 85}
+  },
+  es: {
+    countryName: "Spain",
+    entityName: "Bepro Spain",
+    infos: basicInfos,
+    cardSize: {width: 55, height: 85}
+  },
+  jp: {
+    countryName: "Japan",
+    entityName: "Bepro Japan LLC",
+    infos: [name, nameEng, jobTitle, jobTitleTranslation, mobileCountryCode, mobile, email, address],
+    cardSize: {width: 55, height: 91}
+  },
+  us: {
+    countryName: "USA",
+    entityName: "Bepro USA Inc.",
+    infos: basicInfos,
+    cardSize: {width: 50.8, height: 88.9}
+  }
+}
+
+const frontLogoSize = 10;
+const defaultFontSize = 10;
+
+const displayImageWidth = 250;
+const downloadImageWidth = displayImageWidth * 10;
 
 class Main extends React.Component{
-
   constructor(props) {
     super(props);
     this.tableRef = React.createRef();
-    this.settings = {
-      startRows: 200,
-      startCols: 3,
-      width: "100%",
-      rowHeaders: true,
-      stretchH: "all",
-      colWidths: ["30%", "30%", "40%"],
-      maxCols: 3
-    }
+
     this.state = {
-      analysts:[],
+      currentEntity: entitiesObj["ko"],
+      members:[],
       downloadPreview: false,
+      tableSettings: {
+        startRows: 200,
+        startCols: entitiesObj["ko"].infos.length,
+        maxCols: entitiesObj["jp"].infos.length,
+        width: "100%",
+        rowHeaders: true,
+        stretchH: "all",
+        manualColumnResize: true
+      }
     }
   }
 
@@ -36,45 +86,53 @@ class Main extends React.Component{
   }
 
   getCertificateInfo = () => {
+    const {currentEntity} = this.state;
+
     let table = this.tableRef.current.hotInstance;
     let rows = table.countRows();
+    let members = []
 
-    let analysts = []
     for(let i=0; i<rows; i++){
       let rowNumber = i+1;
-      let code = table.getDataAtCell(i,0);
-      let name = table.getDataAtCell(i,1);
-      let period = table.getDataAtCell(i,2);
-      let grade = (code && (code[0] == "A" || code[0] == "B")) ? code[0] : "";
-      let isPreview = false;
+      let memberCardInfo = null;
 
-      if(code || name || period){
-        let analyst = {rowNumber, grade, code, name, period, isPreview}
-        analysts.push(analyst);
+      currentEntity.infos.map((info, index) => {
+        let cellValue = table.getDataAtCell(i,index);
+        if(cellValue){
+          if(!memberCardInfo) memberCardInfo = {};
+          memberCardInfo[info.key] = cellValue
+        }
+      });
+
+      if(memberCardInfo){
+        memberCardInfo.rowNumber = rowNumber;
+        memberCardInfo.isPreview = false;
+        members.push(memberCardInfo);
       }
     }
-    this.setState({analysts})
+    this.setState({members})
   }
 
   setDownloadPreviewMode = (isPreview) => {
     this.setState({downloadPreview: isPreview})
   }
 
-  setCardPreviewMode = (analyst, isPreview) => {
-    let {analysts} = this.state;
-    let targetIndex = analysts.indexOf(analyst);
-    analysts[targetIndex].isPreview = isPreview
-    this.setState({analysts});
+  setCardPreviewMode = (member, isPreview) => {
+    let {members} = this.state;
+    let targetIndex = members.indexOf(member);
+    members[targetIndex].isPreview = isPreview
+    this.setState({members});
   }
 
   downloadAllImages(){
-    let {analysts} = this.state;
+    let {members} = this.state;
     let zip = new JSZip();
 
-    analysts.map( (analyst, index) => {
+    members.map( (analyst, index) => {
 
       let imageContainer = document.createElement("div");
       imageContainer.className = "download-image-container"
+      imageContainer.style.width = `${downloadImageWidth}px`;
 
       let targetCardItem = document.getElementById(analyst.code);
       let cloneItem = targetCardItem.cloneNode(true);
@@ -93,23 +151,28 @@ class Main extends React.Component{
         zip.file(`row_${analyst.rowNumber}_${analyst.name}_${analyst.code}.png`, imageURI, {base64: true});
         rootContainer.removeChild(imageContainer);
 
-        if(index == analysts.length - 1){
+        if(index == members.length - 1){
           zip.generateAsync({type: "blob"}).then( (content) => {
-            saveAs(content, "Bepro Analysts.zip");
+            saveAs(content, "Bepro Business Card.zip");
           })
         }
       });
     })
   }
 
-  downloadImage(analyst){
-    let imageContainer = document.createElement("div");
-    imageContainer.className = "download-image-container"
+  downloadImage(member){
+    let {currentEntity} = this.state;
 
-    let targetCardItem = document.getElementById(analyst.code);
+    let imageContainer = document.createElement("div");
+    imageContainer.className = "download-image-container";
+    imageContainer.style.width = `${downloadImageWidth}px`;
+
+    let targetCardItem = document.getElementById(`business-card-${member.rowNumber}`);
     let cloneItem = targetCardItem.cloneNode(true);
     let messageDiv = cloneItem.firstChild;
     cloneItem.removeChild(messageDiv);
+
+    cloneItem.style.fontSize = defaultFontSize * 10 + "pt";
 
     imageContainer.appendChild(cloneItem);
 
@@ -120,7 +183,7 @@ class Main extends React.Component{
       let file_path = canvas.toDataURL("image/png");
       let a = document.createElement('a');
       a.href = file_path;
-      a.download = `row_${analyst.rowNumber}_${analyst.name}_${analyst.code}`;
+      a.download = `BC_${currentEntity.countryName}_${member.rowNumber}_${member.name}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -128,84 +191,140 @@ class Main extends React.Component{
     })
   };
 
+  onEntityButtonClick(entity){
+    let newState = {...this.state};
+
+    newState.currentEntity = entity;
+
+    newState.tableSettings.startCols = entity.infos.length;
+    newState.tableSettings.maxCols = entity.infos.length;
+
+    this.setState(newState);
+  }
 
   render(){
 
-    let {analysts, downloadPreview} = this.state;
+    let {members, downloadPreview, currentEntity, tableSettings} = this.state;
+    console.log(members);
+    let {width, height} = currentEntity.cardSize;
+    let cardWidth = width;
+    let cardHeight = height;
 
     return  (
       <div className={"main"}>
         <div className={"section-table"}>
           <div className={"section-header"}>
             <div className="title">
-              <img src={logo} alt="bepro logo"/><h1>Bepro11 Analyst 자격증 제작 툴</h1>
+              <img src={logo} alt="bepro logo"/><h1>Bepro Business Card Generator</h1>
             </div>
 
-            <div className="guide">
-              <p>1. 컬럼 A,B,C에 각각 자격번호, 이름, 유효기간을 입력합니다.</p>
-              <p>2. 맨 아래 이미지 생성 버튼을 클릭합니다</p>
-              <p>3. 우측에 완성 예상 이미지들을 보고 오탈자가 있는지 확인합니다.</p>
-              <p>4. 이미지를 모두 다운로드 하여 인쇄업체에 전달합니다.</p>
+            {/*<div className="guide">*/}
+            {/*  <p>1. Put all the information needed for a business card</p>*/}
+            {/*  <p>2. Click Generate Business card images button on the bottom</p>*/}
+            {/*  <p>3. Check the images generated from the right side.</p>*/}
+            {/*  <p>4. Download and bring all the images to the card print site!</p>*/}
+            {/*</div>*/}
+
+            <div className="section-select-entity">
+              {Object.keys(entitiesObj).map( (countryCode, index) => {
+                return (
+                  <button className={`btn-entity ${currentEntity === entitiesObj[countryCode] ? 'active' : ''}`}
+                          onClick={ () => {this.onEntityButtonClick(entitiesObj[countryCode]);}}>
+                    {entitiesObj[countryCode].countryName}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
           <div className={"section-body"}>
-            <div className={"custom-column-header"}>
-              <div className="row-fixed"></div>
-              <div className="col code">자격 번호</div>
-              <div className="col name">이름</div>
-              <div className="col period">유효기간</div>
-            </div>
             <div className="table-wrapper">
-              <HotTable className="certificate-table" settings={this.settings} ref={this.tableRef}/>
+              <HotTable className="business-card-table"
+                        settings={tableSettings}
+                        ref={this.tableRef}>
+                {currentEntity.infos.map( (info) => {
+                  return <HotColumn title={info.displayName}></HotColumn>
+                })}
+              </HotTable>
             </div>
           </div>
-          <button className="button-generate" onClick={() => this.getCertificateInfo()}>합격증에 새길 합격자 정보 이미지 생성</button>
+          <button className="button-generate" onClick={() => this.getCertificateInfo()}>Generate Business Card Image to Print</button>
         </div>
+
         <div className={"section-images"}>
           <div className="section-header">
-            <h1>합격자 정보 이미지 영역</h1>
-            <button className={`btn-download-all ${analysts.length === 0 ? 'disabled' : ''}`}
+            <h1>Business Card</h1>
+            <h2 className="size-info">{currentEntity.countryName} ( {cardWidth}mm x {cardHeight}mm )</h2>
+            <button className={`btn-download-all ${members.length === 0 ? 'disabled' : ''}`}
                     onMouseEnter={() => this.setDownloadPreviewMode(true)}
                     onMouseLeave={() => this.setDownloadPreviewMode(false)}
                     onClick={() => this.downloadAllImages()}
-            >{analysts.length > 0 ? `${analysts.length}개 ` : ''} 이미지 일괄 다운로드</button>
+            >{members.length > 0 ? `${members.length}개 ` : ''} Download All Images</button>
           </div>
           <div className="section-body">
-            {analysts.length === 0 && <div className="empty-label">테이블에 정보를 넣고 이미지 생성버튼을 누르시면 이곳에 완성 예상 이미지가 나타납니다</div>}
-            {analysts.map( (analyst, index) => {
-
+            {members.length === 0 && <div className="empty-label">Put all the information in the table and Click Generate Button.<br/> Preview images will be shown here</div>}
+            {members.map( (member) => {
               return (
-                <div className={`certificate-card-wrapper`}>
-                  <div className="row-number">{analyst.rowNumber}</div>
-                  <div className={`certificate-card ${analyst.grade} ${(downloadPreview || analyst.isPreview) ? 'preview' : ''}`} id={`${analyst.code}`}>
+                <div className={`business-card-wrapper`} style={{width: `${displayImageWidth}px`}}>
+                  <div className="row-number">{member.rowNumber}</div>
+                  <div className={`business-card ${(downloadPreview || member.isPreview) ? 'preview' : ''}`}
+                       id={`business-card-${member.rowNumber}`}
+                       style={{
+                         paddingTop: `${(cardHeight/cardWidth * 100)}%`,
+                         fontSize: defaultFontSize + "pt"
+                       }}
+                  >
                     <div className="message-container">
                       <div className="message preview-guide">
-                        <p>인쇄 업체에는 합격자 정보만 전달합니다.</p>
-                        <p>이미지를 다운받아 업체에 전달해주세요.</p>
+                        <p>Download the image and order business card!</p>
                       </div>
-                      {!analyst.grade && (
-                        <div className="message grade-alert">
-                          <p>자격 등급을 알 수 없습니다.</p>
-                          <p>자격 번호를 확인해주세요</p>
-                        </div>
-                      )}
                       <div className="message preview-guide footer">
-                        <p>이 메세지는 이미지에서 제외됩니다</p>
+                        <p>This message won't be included in the download image</p>
                       </div>
                     </div>
+                    <div className="card-content">
+                      <div className="container-logo" style={{width: `${(frontLogoSize/cardWidth) * 100}%`,}}>
+                        <div className="logo-front"/>
+                      </div>
 
-                    <div className="info">
-                      <p>{analyst.name}</p>
-                      <p>{analyst.code}</p>
-                      <p>{analyst.period}</p>
+                      <div className="content-body">
+                        <div className="container-name-n-job-title">
+                          <div className="info name">
+                            <div className="stick"/>
+                            <span className="original">{member.name}</span>
+                            {member.nameEng && <span className="sub">{member.nameEng}</span>}
+                          </div>
+                          <div className="info job-title">
+                            {member.jobTitle}
+                          </div>
+                        </div>
+                        <div className="container-contact-info">
+                          <div className="contact-item mobile">
+                            <img src={iconMobile} alt=""/>
+                            <span className="country-code">+{member.mobileCountryCode}</span>
+                            <span>{member.mobile}</span>
+                          </div>
+                          <div className="contact-item email">
+                            <img src={iconEmail} alt=""/>
+                            <span>{member.email}</span>
+                          </div>
+                          <div className="contact-item mobile">
+                            <img src={iconDesktop} alt=""/>
+                            <span>www.bepro11.com</span>
+                          </div>
+                        </div>
+                        <div className="container-address">
+                          <div className="address-header">{currentEntity.entityName}</div>
+                          <div className="address-body">{member.address}</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <button className="btn-download-image"
-                          onMouseEnter={() => this.setCardPreviewMode(analyst, true)}
-                          onMouseLeave={() => this.setCardPreviewMode(analyst, false)}
-                          onClick={() => this.downloadImage(analyst)}
-                  >개별 이미지 다운로드</button>
+                          onMouseEnter={() => this.setCardPreviewMode(member, true)}
+                          onMouseLeave={() => this.setCardPreviewMode(member, false)}
+                          onClick={() => this.downloadImage(member)}
+                  >Download Individual Image</button>
                 </div>
               )
             })}

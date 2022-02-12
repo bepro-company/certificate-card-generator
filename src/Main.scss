@@ -31,25 +31,99 @@ button{
 
   display: flex;
 
-  $card-width: 240px;
-  $certificate-info-text-ratio: 17;
-  .certificate-card{
+  $business-info-text-ratio: 18;
+  .business-card{
     position: relative;
     width: 100%;
-    padding-top: 159.25925926%;
+
     border-radius: 8px;
-    background-color: rgb(225,225,225);
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+
+    *{
+      font-family: "SF Pro Text Medium Embeded";
+      text-align: left;
+      box-sizing: border-box;
+    }
 
     &.preview {
-      background: none !important;
-      background-color: white !important;
+      .message-container{
+        display: block;
+      }
+    }
+    .card-content{
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
 
-      .preview-guide{
-        display: block !important;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5em;
+
+      .container-logo{
+        .logo-front{
+          position: relative;
+          width: 100%;
+          padding-top: 100%;
+
+          background: url("./img/logo-front-top-left.png") no-repeat center;
+          background-size: cover;
+        }
       }
 
-      .info{
-        color: black !important;
+
+      .content-body{
+        width: 100%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+
+        gap: 2em;
+
+        .container-name-n-job-title{
+
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          .info.name{
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5em;
+            .stick{
+              width: 0.5em;
+              height: 100%;
+              background-color: black;
+            }
+            .original{
+              font-size: 1.5em;
+            }
+          }
+        }
+
+
+        .container-contact-info{
+          .contact-item{
+            display: flex;
+            align-items: center;
+
+            img{
+              margin-right: 1em;
+              height: 1em;
+            }
+          }
+        }
+
+        .container-address{
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
       }
     }
 
@@ -60,59 +134,15 @@ button{
       right: 16px;
       font-size: 12px;
       color: rgb(150,150,150);
+      display: none;
 
       .message{
         padding: 8px 0px;
       }
       .message.preview-guide{
-        display: none;
         &.footer{
           border-top: 1px solid rgb(235,235,235);
         }
-      }
-    }
-
-    &.A{
-      background: url("./img/card-a.jpg") center no-repeat;
-      background-size: cover;
-
-      .info{
-        color: #cda748;
-      }
-    }
-
-    &.B{
-      background: url("./img/card-b.jpg") center no-repeat;
-      background-size: cover;
-
-      .info{
-        color: #9d9d9d;
-      }
-    }
-
-    .info{
-      position: absolute;
-      bottom: 0;
-      left: 0;
-
-      width: 100%;
-      height: 100%;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: flex-start;
-
-      padding-bottom: 6.5%;
-      padding-left: 7.4%;
-
-      p{
-        font-size: $card-width / $certificate-info-text-ratio;
-        line-height: 1.4;
-        font-weight: 500;
-        font-family: "SF Pro Text Medium Embeded";
-        letter-spacing: .1rem;
-        //font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
       }
     }
   }
@@ -122,7 +152,6 @@ button{
     width: 600px;
     padding-left: 24px;
     padding-bottom: 24px;
-    //background-color: gray;
 
     display: flex;
     flex-direction: column;
@@ -161,6 +190,25 @@ button{
           color: gray;
         }
       }
+      .section-select-entity{
+        margin-top: 16px;
+        width: 100%;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+
+        .btn-entity{
+          border-radius: 20px;
+          background-color: rgb(235,235,235);
+          color: black;
+
+          &.active{
+            background-color: rgb(0,100,240);
+            color: white;
+          }
+        }
+      }
+
     }
 
     .section-body {
@@ -169,28 +217,6 @@ button{
       flex: 1;
       display: flex;
       flex-direction: column;
-
-      .custom-column-header{
-        padding-right: 12px;
-        display: flex;
-        background-color: rgb(235,235,235);
-        border: 1px solid rgb(200,200,200);
-        border-bottom: none;
-
-        .row-fixed{
-          width: 50px;
-          background-color: rgb(225,225,225);
-        }
-        .col{
-          flex: 1;
-          font-weight: bold;
-          font-size: 14px ;
-          line-height: 24px;
-          &.period{
-            flex: 1.33
-          }
-        }
-      }
 
       .table-wrapper{
         overflow-y: auto;
@@ -201,8 +227,14 @@ button{
 
         display: flex;
 
-        .certificate-table{
+        .business-card-table{
           height: 100%;
+          .colHeader{
+            font-size: 12px;
+          }
+        }
+        tr > td{
+          font-size: 13px;
         }
       }
     }
@@ -232,10 +264,15 @@ button{
     .section-header{
       display: flex;
       align-items: center;
-      justify-content: space-between;
       height: 60px;
       border-bottom: 2px solid rgb(235,235,235);
+      gap :24px;
 
+      .size-info{
+        opacity: 0.3;
+        flex: 1;
+        text-align: left;
+      }
       .btn-download-all{
         &.disabled{
           opacity: 0.3;
@@ -259,12 +296,12 @@ button{
         font-size: 14px;
       }
 
-      .certificate-card-wrapper{
+      .business-card-wrapper{
         position: relative;
-        width: $card-width;
         margin: 16px 8px;
 
         $number-size: 24px;
+
         .row-number{
           position: absolute;
           z-index: 100;
@@ -279,13 +316,12 @@ button{
           align-items: center;
           justify-content: center;
           background-color: rgba(235,235,235,0.1);
-
         }
 
         .btn-download-image{
           margin-top: 8px;
           width: 100%;
-          background-color: gray;
+          //background-color: gray;
           color: white;
         }
       }
@@ -295,21 +331,21 @@ button{
   #hot-display-license-info{
     display: none;
   }
-  $download-image-width: 400px;
+  //$download-image-width: 1200px;
   .download-image-container{
     position: absolute;
     left: 0;
     top: 100%;
 
-    width: $download-image-width;
-    .certificate-card{
+    //width: $download-image-width;
+    .business-card{
       border-radius: 0px !important;
 
       p{
-        font-size: $download-image-width / $certificate-info-text-ratio !important;
+        letter-spacing: .25rem;
+        //font-size: $download-image-width / $business-info-text-ratio !important;
       }
     }
-
   }
 }
 
