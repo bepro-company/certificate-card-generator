@@ -1,12 +1,10 @@
 import React from "react";
 import { HotTable } from "@handsontable/react";
-import Handsontable from "handsontable";
 import html2canvas from "html2canvas";
 import JSZip from "jszip";
 import {saveAs} from "file-saver";
 import "./Main.scss";
 import logo from "./img/logo.png";
-
 
 class Main extends React.Component{
 

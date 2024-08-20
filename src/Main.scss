@@ -32,7 +32,7 @@ button{
   display: flex;
 
   $card-width: 240px;
-  $certificate-info-text-ratio: 17;
+  $certificate-info-text-ratio: 18;
   .certificate-card{
     position: relative;
     width: 100%;
@@ -103,15 +103,14 @@ button{
       justify-content: flex-end;
       align-items: flex-start;
 
-      padding-bottom: 6.5%;
-      padding-left: 7.4%;
+      padding-bottom: 6.6%;
+      padding-left: 7.7%;
 
       p{
         font-size: $card-width / $certificate-info-text-ratio;
-        line-height: 1.4;
-        font-weight: 500;
+        line-height: 1.45;
         font-family: "SF Pro Text Medium Embeded";
-        letter-spacing: .1rem;
+        letter-spacing: .05rem;
         //font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
       }
     }
@@ -155,7 +154,7 @@ button{
         padding-left: 12px;
 
         p{
-          font-size: 14px;
+          font-size: 20px;
           line-height: 1.5;
           font-weight: bold;
           color: gray;
@@ -295,7 +294,7 @@ button{
   #hot-display-license-info{
     display: none;
   }
-  $download-image-width: 400px;
+  $download-image-width: 1200px;
   .download-image-container{
     position: absolute;
     left: 0;
@@ -304,12 +303,11 @@ button{
     width: $download-image-width;
     .certificate-card{
       border-radius: 0px !important;
-
       p{
+        letter-spacing: .25rem;
         font-size: $download-image-width / $certificate-info-text-ratio !important;
       }
     }
-
   }
 }
 

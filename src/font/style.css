@@ -4,12 +4,12 @@
     font-family: 'SF Pro Text Medium Embeded';
     font-style: normal;
     font-weight: normal;
-    src: local('SF Compact Display Medium'), url('SFProText-Medium.ttf') format('ttf');
+    src: url('SFProText-Medium.ttf') format('truetype');
     }
 
     @font-face {
     font-family: 'SF Pro Text Regular Embeded';
     font-style: normal;
     font-weight: normal;
-    src: local('SF Compact Display Regular'), url('SFProText-Regular.ttf') format('ttf');
+    src: url('SFProText-Regular.ttf') format('truetype');
     }
